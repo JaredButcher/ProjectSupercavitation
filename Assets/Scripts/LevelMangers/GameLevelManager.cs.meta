@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: 91462649ed5f4cf46b48c2c6b61a657a
+timeCreated: 1482454693
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - SettingsMenu: {instanceID: 0}
+  - MainUI: {instanceID: 0}
+  - DEPrefab: {fileID: 1000014126321774, guid: 1023ef86453c9784a973232a4420cd89, type: 2}
+  - DDPrefab: {fileID: 1000014126321774, guid: 6586bb8c9525b1d4e9dd707351acc3ab, type: 2}
+  - CLPrefab: {fileID: 1000014126321774, guid: 0b2a9195d95fad041a98e0a3f4fb0b20, type: 2}
+  - CCPrefab: {fileID: 1000014126321774, guid: 8d034d4617daf6e4a8b85d754b651619, type: 2}
+  - CAPrefab: {fileID: 1000014126321774, guid: 3b217c14ba14d1f46b9cd1fcc7656ec1, type: 2}
+  - BDPrefab: {fileID: 1000014126321774, guid: 935ff4d15bee16f4c8c2270a1126fd33, type: 2}
+  - BBPrefab: {fileID: 1000014126321774, guid: fd28fb8f608520a419db0bbe0441c81f, type: 2}
+  - CEPrefab: {fileID: 1000014126321774, guid: c6842b70c64eda54fb36e967aa8a9e90, type: 2}
+  - CVPrefab: {fileID: 1000014126321774, guid: 02614d82d15c3e84083dccc70c81016c, type: 2}
+  - SSPrefab: {fileID: 1000014126321774, guid: c6458d4a314dd994f93c753ebe79d454, type: 2}
+  - SAPrefab: {fileID: 1000014126321774, guid: 87e38879a8f6e764cafc16440b1c4351, type: 2}
+  - ARPrefab: {fileID: 1000014126321774, guid: 5148c2996466bb042a629b98a6e05b49, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
