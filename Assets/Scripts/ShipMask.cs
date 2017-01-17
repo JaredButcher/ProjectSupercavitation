@@ -31,6 +31,8 @@ public class ShipMask : MonoBehaviour {
     GameObject DepthRadius;
     [Header("ShipUI")]
     [SerializeField]
+    GameObject UIContainer;
+    [SerializeField]
     Text NameText;
     [SerializeField]
     Text PlayerText;
@@ -39,7 +41,19 @@ public class ShipMask : MonoBehaviour {
     [SerializeField]
     Slider HealthBar;
     [SerializeField]
-    Canvas UIStuff;
+    Image EvadeImage;
+    [SerializeField]
+    Canvas D_UI;
+    [SerializeField]
+    Canvas S_UI;
+    [SerializeField]
+    Text SDesText;
+    [SerializeField]
+    Text SRangeText;
+    [SerializeField]
+    Text SHealthText;
+    [SerializeField]
+    Slider SHealthBar;
     [SerializeField]
     GameObject Model;
     #endregion
@@ -49,6 +63,7 @@ public class ShipMask : MonoBehaviour {
     Team LocalTeam;
     public Ship Ship { get; set; }
     public UIStatus UIStatus { get; set; }
+    public bool IsSpotted { get; private set; }
     bool Moveing;
     bool Fireing;
     bool Torping;
@@ -83,7 +98,7 @@ public class ShipMask : MonoBehaviour {
         if (MoveingTime > 0 && RotatingTime < .1) {
             MoveingTime -= Time.deltaTime;
             Model.transform.position = Vector3.Lerp(PrevPos, transform.position, 1 - MoveingTime);
-            UIStuff.transform.position = new Vector3(Model.transform.position.x, UIStuff.transform.position.y, Model.transform.position.z);
+            UIContainer.transform.position = new Vector3(Model.transform.position.x, UIContainer.transform.position.y, Model.transform.position.z);
         }
         if (HealthAculator != 0) {
             ChangeingHealth();
@@ -125,6 +140,11 @@ public class ShipMask : MonoBehaviour {
         HealthBar.fillRect.GetComponent<Image>().color = TeamManager.TeamColors[Team];
         HealthBar.maxValue = Ship.MaxHealth;
         HealthDispaly = Ship.Health;
+        SDesText.text = Ship.ShipType.ToString();
+        SDesText.color = TeamManager.TeamColors[Team];
+        SRangeText.color = TeamManager.TeamColors[Team];
+        SHealthBar.fillRect.GetComponent<Image>().color = TeamManager.TeamColors[Team];
+        SHealthBar.maxValue = Ship.MaxHealth;
         UpdateHealthBars();
     }
     public void CheckSpoting() {
@@ -147,11 +167,15 @@ public class ShipMask : MonoBehaviour {
         if (_Spoted || Team == LocalTeam) {
             Model.layer = 0;
             Icon.layer = 8;
-            UIStuff.enabled = true;
+            //Prevents both UIs from appearing for the moving ship
+            S_UI.enabled = !D_UI.enabled; 
+            IsSpotted = true;
         } else {
             Model.layer = 9;
             Icon.layer = 9;
-            UIStuff.enabled = false;
+            S_UI.enabled = false;
+            D_UI.enabled = false;
+            IsSpotted = false;
         }
     }
     public void MakeShipButton() {
@@ -166,12 +190,15 @@ public class ShipMask : MonoBehaviour {
         PrevPos = transform.position;
         transform.position = _Location;
         Model.transform.position = PrevPos;
-        UIStuff.transform.position = new Vector3(Model.transform.position.x, UIStuff.transform.position.y, Model.transform.position.z);
+        UIContainer.transform.position = new Vector3(Model.transform.position.x, UIContainer.transform.position.y, Model.transform.position.z);
         CurrentRotation = Model.transform.rotation;
         RotatingTarget = Quaternion.FromToRotation(new Vector3(0,0,1), (PrevPos - transform.position).normalized);
         RotatingTime = .5f;
         MoveingTime = 1f;
         CheckSpoting();
+        foreach (ShipMask Ship in Fleet.AllShips.Where(S => S.IsSpotted == true && S != this)) {
+            Ship.UpdateRange(this);
+        }
     }
     //TODO Make the targets into what is displayed and make the health and postion instantly correct
     #region UpdateMethods
@@ -202,11 +229,9 @@ public class ShipMask : MonoBehaviour {
                 if (Range <= Ship.Range) {
                     ShipMask Enemy = Hit.transform.GetComponentInParent<ShipMask>();
                     float Evasion = (100 - Mathf.Min(UnityEngine.Random.Range(0, Enemy.Ship.Evasion) + 0.0f, 100f)) / 100f; //Evasion
-                    Debug.Log(Enemy.Ship.Evasion + " : " + Evasion + " : " + Range);
                     int Damage = Mathf.RoundToInt(Mathf.Max(0,(Ship.Fire * Evasion
                         / Mathf.Max(Range / 3000, 1) //Range protection vs fire ---Magic Number here---
                         / Mathf.Max((Enemy.Ship.Armor / 100),1)))); //Armor protection vs fire ---Magic Number here---
-                    Debug.Log(Damage);
                     Manager.LocalPlayer.CmdShipHealth(Enemy.name, Enemy.Ship.Health - Damage);
                     FireRadius.SetActive(false);
                     ShipButton.TacticalActive = false;
@@ -353,11 +378,14 @@ public class ShipMask : MonoBehaviour {
         HealthAculator = HealthDispaly - Ship.Health;
     }
     public void SetEvade(int _Evade) {
+        EvadeImage.enabled = _Evade > Ship.Evasion;
         Ship.Evasion = _Evade;
     }
     public void UpdateHealthBars() {
         HealthBar.value = HealthDispaly;
         HealthText.text = HealthDispaly + " / " + Ship.MaxHealth;
+        SHealthBar.value = HealthDispaly;
+        SHealthText.text = HealthDispaly.ToString();
         if (UIStatus) {
             UIStatus.SetHealth(Ship.Health, Ship.MaxHealth);
         }
@@ -380,6 +408,13 @@ public class ShipMask : MonoBehaviour {
         }
     }
     public void ScaleUI(float _Scale) {
-        UIStuff.transform.localScale = new Vector3(_Scale,_Scale,1);
+        UIContainer.transform.localScale = new Vector3(_Scale,_Scale,1);
+    }
+    public void SetDetailedDisplay(bool Detailed) {
+        D_UI.enabled = Detailed;
+        S_UI.enabled = !Detailed;
+    }
+    public void UpdateRange(ShipMask Ship) {
+        SRangeText.text = Mathf.Round(Mathf.Abs((transform.position - Ship.transform.position).magnitude) / 100) / 10 + "km";
     }
 }

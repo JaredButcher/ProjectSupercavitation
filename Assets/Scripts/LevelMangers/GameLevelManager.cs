@@ -40,6 +40,7 @@ public class GameLevelManager : LevelManager {
     bool GameEnded = false;
     string QuantiyPre;
     const float ATTRITION = .35f;
+    bool DetailedActive;
 
     static Dictionary<string, Map> MapInfo = new Dictionary<string, Map>(1) {
         {"OceanSmall",new Map(50000,GameMode.Attrition) }
@@ -79,9 +80,24 @@ public class GameLevelManager : LevelManager {
                 ShipMask Ship = Hit.transform.parent.GetComponent<ShipMask>();
                 if (Ship.Team == LocalPlayer.Team) {
                     if (Ship.Active) {
+                        Ship.SetDetailedDisplay(true);
+                        foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true && S != Ship)) {
+                            ShipM.SetDetailedDisplay(false);
+                            ShipM.UpdateRange(Ship);
+                        }
                         Ship.ShipButton.Enable(true);
                     }
                 }
+            }
+        } else if (Input.GetKey(KeyCode.LeftAlt)) {
+            DetailedActive = true;
+            foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true)) {
+                ShipM.SetDetailedDisplay(true);
+            }
+        } else if (DetailedActive) {
+            DetailedActive = false;
+            foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true)) {
+                ShipM.SetDetailedDisplay(false);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 public class UIStatus : MonoBehaviour {
     [SerializeField]
@@ -35,6 +36,11 @@ public class UIStatus : MonoBehaviour {
     public void SelectShip() {
         if (Ship) {
             if (Ship.Active) {
+                Ship.SetDetailedDisplay(true);
+                foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true && S != Ship)) {
+                    ShipM.SetDetailedDisplay(false);
+                    ShipM.UpdateRange(Ship);
+                }
                 Ship.ShipButton.Enable(true);
             }
             FindObjectOfType<GameLevelManager>().LocalPlayer.GetComponent<CamMovement>().MoveTo(Ship.transform.position);
