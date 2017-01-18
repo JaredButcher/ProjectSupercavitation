@@ -79,14 +79,14 @@ public class GameLevelManager : LevelManager {
             if (Physics.Raycast(Ray, out Hit) && Hit.transform.gameObject.tag == "Ship") {
                 ShipMask Ship = Hit.transform.parent.GetComponent<ShipMask>();
                 if (Ship.Team == LocalPlayer.Team) {
-                    if (Ship.Active) {
-                        Ship.SetDetailedDisplay(true);
-                        foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true && S != Ship)) {
-                            ShipM.SetDetailedDisplay(false);
-                            ShipM.UpdateRange(Ship);
-                        }
-                        Ship.ShipButton.Enable(true);
+                    Ship.SetDetailedDisplay(true);
+                    foreach (ShipMask ShipM in Fleet.AllShips.Where(S => S.IsSpotted == true && S != Ship)) {
+                        ShipM.SetDetailedDisplay(false);
+                        ShipM.UpdateRange(Ship);
                     }
+                    Ship.ShipButton.Enable(true);
+                } else {
+                    Ship.SetDetailedDisplay(true);
                 }
             }
         } else if (Input.GetKey(KeyCode.LeftAlt)) {

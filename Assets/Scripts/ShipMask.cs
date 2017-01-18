@@ -228,11 +228,7 @@ public class ShipMask : MonoBehaviour {
                 float Range = Mathf.Abs((Hit.transform.position - transform.position).magnitude);
                 if (Range <= Ship.Range) {
                     ShipMask Enemy = Hit.transform.GetComponentInParent<ShipMask>();
-                    float Evasion = (100 - Mathf.Min(UnityEngine.Random.Range(0, Enemy.Ship.Evasion) + 0.0f, 100f)) / 100f; //Evasion
-                    int Damage = Mathf.RoundToInt(Mathf.Max(0,(Ship.Fire * Evasion
-                        / Mathf.Max(Range / 3000, 1) //Range protection vs fire ---Magic Number here---
-                        / Mathf.Max((Enemy.Ship.Armor / 100),1)))); //Armor protection vs fire ---Magic Number here---
-                    Manager.LocalPlayer.CmdShipHealth(Enemy.name, Enemy.Ship.Health - Damage);
+                    FireAtEnemy(Enemy, Range, Ship.Fire);
                     FireRadius.SetActive(false);
                     ShipButton.TacticalActive = false;
                     SetBoolsFalse();
@@ -268,7 +264,6 @@ public class ShipMask : MonoBehaviour {
     }
     void ChangeingHealth() {
         HealthAculator -= Ship.MaxHealth / 180f;
-        Debug.Log(HealthAculator);
         if (HealthAculator <= 0) {
             HealthAculator = 0;
             HealthDispaly = Ship.Health;
@@ -354,6 +349,7 @@ public class ShipMask : MonoBehaviour {
         //Drop Charges
     }
     public void Sink() {
+        Debug.Log("Sinking");
         Fleet.AllShips.Remove(this);
         Player.Fleet.Ships.Remove(this);
         if (UIStatus) {
@@ -398,9 +394,9 @@ public class ShipMask : MonoBehaviour {
     }
     public void SetActiveTurn(bool _Active) {
         Active = _Active;
-        UIStatus.Active(_Active);
         ShipButton.TacticalActive = _Active;
         ShipButton.MovementActive = _Active;
+        UIStatus.Active(_Active);
         if (_Active) {
             Ship.UnEvade();
         } else {
@@ -416,5 +412,20 @@ public class ShipMask : MonoBehaviour {
     }
     public void UpdateRange(ShipMask Ship) {
         SRangeText.text = Mathf.Round(Mathf.Abs((transform.position - Ship.transform.position).magnitude) / 100) / 10 + "km";
+    }
+    public void FireSecondaries() {
+        foreach(ShipMask Enemy in Fleet.AllShips.Where(s => s.Team != Team && s.IsSpotted && s != this)) {
+            float Range = Mathf.Abs((Enemy.transform.position - transform.position).magnitude);
+            if (Range <= Ship.SecondRange) {
+                FireAtEnemy(Enemy, Range, Ship.Secondary);
+            }
+        }
+    }
+    void FireAtEnemy(ShipMask _Enemy, float _Range, int _Firepower) {
+        float Evasion = (100 - Mathf.Min(UnityEngine.Random.Range(0, _Enemy.Ship.Evasion) + 0.0f, 100f)) / 100f; //Evasion
+        int Damage = Mathf.RoundToInt(Mathf.Max(0, (_Firepower * Evasion
+            / Mathf.Max(_Range / 3000, 1) //Range protection vs fire ---Magic Number here---
+            / Mathf.Max((_Enemy.Ship.Armor / 100), 1)))); //Armor protection vs fire ---Magic Number here---
+        Manager.LocalPlayer.CmdShipHealth(_Enemy.name, _Enemy.Ship.Health - Damage);
     }
 }

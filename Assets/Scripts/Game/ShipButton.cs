@@ -78,6 +78,10 @@ public class ShipButton : MonoBehaviour {
             if (Ship.Active) {
                 Ship.SetActiveTurn(false);
             }
+        } else if(tacticalActive ^ movementActive) {
+            if (Ship.Active) {
+                Ship.UIStatus.Active(false);
+            }
         }
     }
     public void ChangeTorps(int _Torps) {

@@ -245,6 +245,9 @@ public class Player : NetworkBehaviour {
     [ClientRpc]
     public void RpcTurn(Team _Team) {
         FindObjectOfType<GameLevelManager>().UpdateStatus(_Team);
+        foreach (ShipMask Ship in LocalPlayer.Fleet.Ships) {
+            Ship.FireSecondaries();
+        }
         foreach (Player Player in GameManager.GetPlayers()) {
             Player.TeamTurn = _Team;
             Player.TurnActive = Player.Team == _Team;

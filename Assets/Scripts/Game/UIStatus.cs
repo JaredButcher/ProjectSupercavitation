@@ -28,8 +28,10 @@ public class UIStatus : MonoBehaviour {
         float a;
         if (_Active) {
             a = 1;
-        } else {
+        } else if (Ship.ShipButton.TacticalActive || Ship.ShipButton.MovementActive) {
             a = .3f;
+        } else {
+            a = 0;
         }
         Panal.color = new Color(Panal.color.r, Panal.color.g, Panal.color.b, a);
     }

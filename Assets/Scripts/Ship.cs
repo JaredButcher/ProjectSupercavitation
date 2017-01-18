@@ -14,6 +14,7 @@ public abstract class Ship {
     public int Torps { get; set; }
     public int Depth { get; set; }
     public int Range { get; set; }
+    public int SecondRange { get; set; }
     public int Armor { get; set; }
     public int Evasion { get; set; }
     public int Cost { get; set; }
@@ -52,10 +53,11 @@ public class DE : Ship {
         Camo = 10000;
         Fire = 10;
         AntiAir = 20;
-        Secondary = 2;
+        Secondary = 4;
         Torps = 4;
         Depth = 20;
         Range = 8000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 50;
@@ -75,6 +77,7 @@ public class DD : Ship {
         Torps = 8;
         Depth = 20;
         Range = 8000;
+        SecondRange = 4000;
         Cost = 20;
         Armor = 10;
         Evasion = 60;
@@ -95,6 +98,7 @@ public class CL : Ship {
         Torps = 8;
         Depth = 20;
         Range = 10000;
+        SecondRange = 4000;
         Cost = 30;
         Armor = 15;
         Evasion = 50;
@@ -115,6 +119,7 @@ public class CC : Ship {
         Torps = 4;
         Depth = 20;
         Range = 12000;
+        SecondRange = 4000;
         Cost = 50;
         Armor = 30;
         Evasion = 40;
@@ -135,6 +140,7 @@ public class CA : Ship {
         Torps = 0;
         Depth = 20;
         Range = 20000;
+        SecondRange = 4000;
         Cost = 100;
         Armor = 50;
         Evasion = 30;
@@ -155,6 +161,7 @@ public class BD : Ship {
         Torps = 0;
         Depth = 20;
         Range = 20000;
+        SecondRange = 4000;
         Cost = 100;
         Armor = 100;
         Evasion = 10;
@@ -174,6 +181,7 @@ public class BB : Ship {
         Torps = 0;
         Depth = 20;
         Range = 25000;
+        SecondRange = 4000;
         Cost = 150;
         Armor = 150;
         Evasion = 20;
@@ -193,6 +201,7 @@ public class CV : Ship {
         Torps = 4;
         Depth = 20;
         Range = 5000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 10;
@@ -212,6 +221,7 @@ public class CE : Ship {
         Torps = 4;
         Depth = 20;
         Range = 5000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 10;
@@ -231,6 +241,7 @@ public class SS : Ship {
         Torps = 4;
         Depth = 20;
         Range = 5000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 10;
@@ -250,6 +261,7 @@ public class SA : Ship {
         Torps = 4;
         Depth = 20;
         Range = 5000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 10;
@@ -269,6 +281,7 @@ public class AR : Ship {
         Torps = 4;
         Depth = 20;
         Range = 5000;
+        SecondRange = 4000;
         Cost = 10;
         Armor = 10;
         Evasion = 10;
