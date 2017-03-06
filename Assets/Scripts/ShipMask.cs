@@ -349,7 +349,6 @@ public class ShipMask : MonoBehaviour {
         //Drop Charges
     }
     public void Sink() {
-        Debug.Log("Sinking");
         Fleet.AllShips.Remove(this);
         Player.Fleet.Ships.Remove(this);
         if (UIStatus) {

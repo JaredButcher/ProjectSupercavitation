@@ -138,8 +138,9 @@ public class GameLevelManager : LevelManager {
         QuantityText.gameObject.SetActive(true);
         QuantitySlider.maxValue = _Max;
         QuantitySlider.minValue = _Min;
+        QuantitySlider.value = _Max;
         QuantiyPre = _Text;
-        QuantiyUpdate(_Min);
+        QuantiyUpdate(_Max);
     }
     public void SetupSecondary(string _Text) {
         SecondaryStatus.gameObject.SetActive(true);
@@ -164,7 +165,6 @@ public class GameLevelManager : LevelManager {
         float BlueAdv = (float)Fleet.AdveragePointValue(Team.Blue) / GameOptions.FleetPoints;
         float GreenAdv = (float)Fleet.AdveragePointValue(Team.Green) / GameOptions.FleetPoints;
         float YellowAdv = (float)Fleet.AdveragePointValue(Team.Yellow) / GameOptions.FleetPoints;
-        Debug.Log(RedAdv);
         RedAdvSlider.value = RedAdv;
         BlueAdvSlider.value = BlueAdv;
         YellowAdvSlider.value = YellowAdv;
