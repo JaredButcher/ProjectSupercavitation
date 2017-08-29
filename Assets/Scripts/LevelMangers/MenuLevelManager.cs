@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
+//Level manager for main menu. Will connect to games and obtain player's name
 public class MenuLevelManager : LevelManager {
 
     public InputField IpField;
@@ -31,6 +32,7 @@ public class MenuLevelManager : LevelManager {
         Networking.StopClient();
     }
 
+    //Make sure username exist and save it
     bool CheckName() {
         if (UserName.text == "") {
             ColorBlock colors = UserName.GetComponent<InputField>().colors;

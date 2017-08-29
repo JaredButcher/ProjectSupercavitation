@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 
+//Will gather settings for new game lobby
+//The setters are in both floats and strings for sliders and input fields can both be used
 public class CreateGameManager : LevelManager {
 
     public GameObject FleetPoints;
@@ -20,6 +22,7 @@ public class CreateGameManager : LevelManager {
     public Slider TeamSlider;
     public InputField TeamField;
 
+    //Object to store the lobby settings, will be passed to the lobby
     GameOptionsSet Options;
     GameObject MapDisplay;
     NetworkManager NetworkLobby;
@@ -27,28 +30,20 @@ public class CreateGameManager : LevelManager {
 	void Start () {
         Options = FindObjectOfType<GameOptionsSet>();
         NetworkLobby = FindObjectOfType<NetworkManager>();
-        
     }
-    void OnDrawGizmos() {
-        Gizmos.color = new Color(1, 0, 0, 0.5F);
-        Gizmos.DrawCube(transform.position, new Vector3(10, 10, 10));
-    }
-    public void SetForceFleet(bool ForceFleet) {
-        Options.ForceFleet = ForceFleet;
-        ShipLimit.SetActive(!ForceFleet);
-        FleetPoints.SetActive(!ForceFleet);
-    }
-
     public void CreateGame() {  
+        //Make sure map has been chosen
         if(Options.Map == "") {
             ColorBlock colors = MapButton.GetComponent<Button>().colors;
             colors.normalColor = Color.red;
             MapButton.GetComponent<Button>().colors = colors;
             return;
         }
+        //If no name for lobby has been specefied then create one
         if(GameName.text == "") {
             GameName.text = FindObjectOfType<PlayerSettings>().UserName + "'s Game";
         }
+        //Set Options object's values except map
         Options.FleetPoints = (int)FleetSlider.value;
         Options.MaxShips = (int)ShipSlider.value;
         Options.MaxPlayers = (int)PlayerSlider.value;
@@ -59,6 +54,7 @@ public class CreateGameManager : LevelManager {
 
     public void SetMap(GameObject Map) {
         DestroyObject(MapDisplay);
+        //Set Options object's map value
         Options.Map = Map.name;
         MapDisplay = Instantiate(Map, transform.position, new Quaternion()) as GameObject;
         MapDisplay.transform.SetParent(FindObjectOfType<LevelManager>().transform);
@@ -95,16 +91,12 @@ public class CreateGameManager : LevelManager {
     public void SetShips(string Ships){
         SetValue(Ships, ShipSlider);
     }
-
-    void SetValue(float Value, InputField Field)
-    {
+    void SetValue(float Value, InputField Field){
         Field.text = Value.ToString();
     }
-    void SetValue(string Value, Slider Slider)
-    {
+    void SetValue(string Value, Slider Slider){
         float temp;
-        if (float.TryParse(Value, out temp))
-        {
+        if (float.TryParse(Value, out temp)){
             Slider.value = Mathf.Clamp(temp, Slider.minValue, Slider.maxValue);
         }
     }

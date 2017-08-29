@@ -4,13 +4,17 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
+//Base class for level managers to inheret
+//Containes functions to switch between scenes, close the game, and interact with the settings menu
 public class LevelManager : MonoBehaviour {
 
     [Header("Basic Level Manager")]
     public GameObject SettingsMenu;
+    //Everything in the UI besides the settings menu
     public GameObject MainUI;
 
     protected void Update() {
+        //Input to toggle settings menu, children that want to use Update need to run this one as well
         if (Input.GetKeyDown(KeyCode.Escape) && SettingsMenu && MainUI) {
             SettingsToggle();
         }

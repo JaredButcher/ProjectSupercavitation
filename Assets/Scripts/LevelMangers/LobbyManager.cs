@@ -5,7 +5,9 @@ using UnityEngine.Networking;
 using UnityEngine.Events;
 using System.Linq;
 
+//
 public class LobbyManager : LevelManager {
+    //UI elements
     [Header("Main Screen")]
     public Text GameName;
     public Text Ip;
@@ -47,6 +49,7 @@ public class LobbyManager : LevelManager {
     }
     new void Update() {
         base.Update();
+        //If the game name UI element hasn't been set then set all of the options 
         if (GameName.text == "") {
             GameName.text = GameOptions.GameName;
             MaxPoints = GameOptions.FleetPoints;
@@ -60,6 +63,7 @@ public class LobbyManager : LevelManager {
                 SetPoints(Player.Fleet.GetPlanPointCount());
             }
         }
+        //If player isn't set then find the local player in the game manager, cannot be done in start because player object might not yet exsist
         if (!Player) {
             Player[] LocalPlayer = GameManager.GetPlayers().Where(p => p.isLocalPlayer).ToArray();
             if(LocalPlayer.Length > 0) {
@@ -137,6 +141,7 @@ public class LobbyManager : LevelManager {
     public bool GetReady() {
         return Ready;
     }
+    //Updates the list of ships the player is currently bringing into battle
     void UpdateFleetInfo() {
         Des.text = "Destoryer Escorts: " + Player.Fleet.ShipPlan[ShipDesination.DE];
         Dds.text = "Destoryers: " + Player.Fleet.ShipPlan[ShipDesination.DD];

@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.Networking;
 using System.Linq;
 
+//Static object that stores game settings
+//Set by GameOptionsSet on Server and by network visa Player on client
 public class GameOptions : MonoBehaviour{
     public static int FleetPoints;
     public static int MaxShips;
