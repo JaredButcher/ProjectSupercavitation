@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.Events;
 using System.Linq;
 
-//
+//Handles Lobby UI
 public class LobbyManager : LevelManager {
     //UI elements
     [Header("Main Screen")]
@@ -40,6 +40,7 @@ public class LobbyManager : LevelManager {
     int MaxShips;
     bool Ready;
     bool GameStarting;
+    //Local player
     Player Player;
 
     void Start() {
@@ -78,6 +79,7 @@ public class LobbyManager : LevelManager {
         NetworkManager.StopHost();
         LoadLevel("Menu");
     }
+    //Set points on UI and check if the limit has been reached
     bool SetPoints(int _Points) {
         Points = _Points;
         foreach (Text PointText in RemPoints) {
@@ -112,6 +114,7 @@ public class LobbyManager : LevelManager {
             }
         }
     }
+    //Shows info about ship selected in the Fleet Builder UI
     public void ToggleShipInfo(string ShipDes) {
         foreach(GameObject Info in FleetBuilderInfo) {
             Info.SetActive(false);
@@ -133,9 +136,8 @@ public class LobbyManager : LevelManager {
                 Ready = true;
                 ReadyText.text = "Waiting for other players";
             }
-            foreach (Player Player in GameManager.GetPlayers()) {
-                Player.SetReady(Ready);
-            }
+            //Sends ready state over network
+            Player.SetReady(Ready);
         }
     }
     public bool GetReady() {

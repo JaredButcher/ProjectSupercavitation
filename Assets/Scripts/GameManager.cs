@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+//staticly stores a list of players
 public class GameManager : MonoBehaviour {
     private static Dictionary<string, Player> Players = new Dictionary<string, Player>();
 

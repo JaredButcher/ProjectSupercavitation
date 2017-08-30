@@ -5,11 +5,14 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Timers;
 
+//Attached to the player prefab that is created on joining a server
+//Handles all network communicaion
 public class Player : NetworkBehaviour {
 
     public static Player LocalPlayer;
     public string UserName;
     public Team Team { get; private set; }
+    //Contains camera and UI 
     public GameObject[] DisableObjects;
     public Slot Slot;
     public bool Ready { get; private set; }
@@ -46,14 +49,17 @@ public class Player : NetworkBehaviour {
                 GameOptions.ServerConf();
             }
         } else {
+            //Disables UI, camera, and chat controller for none local players
             foreach (GameObject thing in DisableObjects) {
                 thing.SetActive(false);
             }
             GetComponent<ChatController>().enabled = false;
         }
         if (isClient) {
+            //Adds player on list of players on UI
             TeamManager.AddPlayerSlot(this);
             if (LocalPlayer) {
+                //Gets all game settings from server
                 LocalPlayer.CmdGetInfo();
             }
         }
@@ -92,23 +98,29 @@ public class Player : NetworkBehaviour {
         Slot = _Slot;
     }
 
+    //Called when joined server
     [Command]
     void CmdGetInfo() {
         foreach (Player Player in GameManager.GetPlayers()) {
+            //Send info about all players to all players
             Player.TargetGetInfo(connectionToClient, Player.UserName, Player.Team, Player.Ready);
         }
+        //Send game settings to new user
         TargetSetOptions(connectionToClient, GameOptions.FleetPoints, GameOptions.MaxShips,
             GameOptions.MaxPlayers, GameOptions.Map, GameOptions.GameName, GameOptions.Teams);
     }
+    //Receive and set player's info
     [TargetRpc]
     public void TargetGetInfo(NetworkConnection target, string _Username, Team _Team, bool _Ready) {
         UserName = _Username;
+        //The player's UI object might not have been created yet
         if (Slot) {
             Slot.UpdateUsername();
             Slot.Team = _Team;
         }
         SetReady(_Ready);
     }
+    //Sends chat message to server
     [Command]
     public void CmdChat(string _message, bool _TeamOnly) {
         if (_TeamOnly) {
@@ -123,6 +135,8 @@ public class Player : NetworkBehaviour {
             }
         }
     }
+    //Sends chat message to clients, only displayed if send to local player
+    //TODO make this targeted
     [ClientRpc]
     private void RpcChat(string _message, Team _Team) {
         if (isLocalPlayer) {
@@ -138,6 +152,7 @@ public class Player : NetworkBehaviour {
     void RpcName(string _Name) {
         UserName = _Name;
     }
+    //Sets game options for spicific player, called from CmdGetInfo
     [TargetRpc]
     void TargetSetOptions(NetworkConnection target, int FP, int MS, int MP, string Map, string GN, int Teams) {
         GameOptions.FleetPoints = FP;
@@ -159,8 +174,10 @@ public class Player : NetworkBehaviour {
             Slot.SetTeam(_Team);
         }
     }
+    //Ran by SetReady, checks if all ready and if so tells all clients to start the game
     [Command]
     void CmdSetReady(bool _Ready) {
+        //Check if all players are ready
         bool GameReady = false;
         if (_Ready) {
             GameReady = true;
@@ -174,8 +191,10 @@ public class Player : NetworkBehaviour {
     }
     [ClientRpc]
     void RpcSetReady(bool _Ready, bool _AllReady) {
+        //Set player's ready state and updates UI
         Ready = _Ready;
         Slot.SetReady(_Ready);
+        //Starts game
         if (_AllReady) {
             FindObjectOfType<LevelManager>().LoadLevel(GameOptions.Map);
         }
@@ -192,14 +211,17 @@ public class Player : NetworkBehaviour {
     #region Game
     Team TeamTurn = Team.Red;
     public bool TurnActive;
+    //Ran from GameLevelManager, starts game
     public void StartGame() {
         TurnActive = false;
         SpawnPoint = PlayerSpawnPoint.GetSpawnPoint(Team);
+        //Spawns fleet on map
         Fleet.BuildFleet(SpawnPoint, Team, this);
         if (isLocalPlayer) {
             GameLevelManager Manager = FindObjectOfType<GameLevelManager>();
             GameMode = Manager.GameMode;
             Manager.LocalPlayer = this;
+            //Creates UI for each ship
             foreach (ShipMask Ship in Fleet.Ships) {
                 Ship.SetUIStatus(Manager.GetUIStatus());
                 Ship.MakeShipButton();
@@ -207,10 +229,13 @@ public class Player : NetworkBehaviour {
             foreach (ShipMask Ship in Fleet.AllShips) {
                 Ship.SetLocalTeam(Team);
             }
+            //Start Red team's turn
             RpcTurn(Team.Red);
+            //Move camera over spawnpoint
             transform.position = new Vector3(SpawnPoint.transform.position.x, 1000, SpawnPoint.transform.position.y);
             Movement.enabled = true;
         }
+        //Run inital spoting check
         foreach (ShipMask Ship in Fleet.AllShips) {
             Ship.CheckSpoting();
         }
@@ -225,6 +250,7 @@ public class Player : NetworkBehaviour {
     [Command]
     void CmdTurnEnd() {
         TurnActive = false;
+        //Check if everyone has ended their turn and start the next one
         if (GameManager.GetPlayers().Where(p => p.TurnActive == true).ToArray().Length == 0) {
             if (TeamTurn == (Team)GameOptions.Teams - 1) {
                 TeamTurn = Team.Red;
@@ -253,6 +279,7 @@ public class Player : NetworkBehaviour {
             Player.TurnActive = Player.Team == _Team;
             if (Player.isLocalPlayer) {
                 foreach (ShipMask Ship in Player.Fleet.Ships) {
+                    //Give all ships who's turn it is their actions
                     Ship.SetActiveTurn(Player.Team == _Team);
                 }
             }
@@ -289,6 +316,7 @@ public class Player : NetworkBehaviour {
     public void CmdGameEnd(Team _Winner) {
         RpcGameEnd(_Winner);
     }
+    //End game, generate and display recap, close connection
     [ClientRpc]
     void RpcGameEnd(Team _Winner) {
         Recap Recap = FindObjectOfType<Recap>();
